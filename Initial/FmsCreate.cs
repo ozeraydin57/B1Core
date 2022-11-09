@@ -1,4 +1,4 @@
-﻿using B1CoreCore.Business;
+﻿using B1Core.Business;
 using SAPbouiCOM.Framework;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace B1CoreCore.Initial
+namespace B1Core.Initial
 {
     public static class FmsCreate
     {

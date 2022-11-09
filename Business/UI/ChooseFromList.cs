@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace B1CoreCore.Business.UI
+namespace B1Core.Business.UI
 {
     public class ChooseFromList
     {
@@ -14,7 +14,7 @@ namespace B1CoreCore.Business.UI
         {
             try
             {
-                SAPbouiCOM.Form oForm = B1CoreCore.Business.UI.Form.GetActiveForm();
+                SAPbouiCOM.Form oForm = B1Core.Business.UI.Form.GetActiveForm();
                 SAPbouiCOM.ISBOChooseFromListEventArg cflEventarg = (SAPbouiCOM.ISBOChooseFromListEventArg)pVal;
                 SAPbouiCOM.DataTable dt = cflEventarg.SelectedObjects;
                 if (dt != null)

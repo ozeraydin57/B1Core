@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace B1CoreCore.Business
+namespace B1Core.Business
 {
     public static class DataHelper
     {

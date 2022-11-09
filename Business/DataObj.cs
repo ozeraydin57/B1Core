@@ -1,5 +1,5 @@
-﻿//using B1CoreCore.Business.UI;
-//using B1CoreCore.Entity;
+﻿//using B1Core.Business.UI;
+//using B1Core.Entity;
 //using B1CoreEntities.Model;
 //using System;
 //using System.Collections.Generic;
@@ -7,7 +7,7 @@
 //using System.Text;
 //using System.Threading.Tasks;
 
-//namespace B1CoreCore.Business
+//namespace B1Core.Business
 //{
 //    public static class DataOBj<T>
 //    {

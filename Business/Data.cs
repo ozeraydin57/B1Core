@@ -1,5 +1,5 @@
-﻿using B1CoreCore.Business.UI;
-using B1CoreCore.Entity;
+﻿using B1Core.Business.UI;
+using B1Core.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using SAPbobsCOM;
 using System.Data.SqlClient;
 
-namespace B1CoreCore.Business
+namespace B1Core.Business
 {
     /// <summary>
     /// recordset ile hızlıca işlem yapmak ve tek noktadan sorgulamaları yönetmek için yapılmıştır.

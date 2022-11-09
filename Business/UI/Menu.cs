@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace B1CoreCore.Business.UI
+namespace B1Core.Business.UI
 {
     public static class Menu
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace B1CoreCore
+namespace B1Core
 {
     /// <summary>
     /// sapb1 işlemleri bu değişken üzerinden yapulcuk, sarumanın doğuşu buradan başlayacak

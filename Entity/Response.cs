@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace B1CoreCore.Entity
+namespace B1Core.Entity
 {
     /// <summary>
     /// method yanıtları bu obje üzerinden yürüyecek
