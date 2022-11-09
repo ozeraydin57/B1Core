@@ -1,0 +1,5 @@
+C:\Users\Administrator\Documents\Visual Studio 2015\Projects\Nar.Sapb1.Addon.Consensus\B1Core\bin\Release\B1Core.dll
+C:\Users\Administrator\Documents\Visual Studio 2015\Projects\Nar.Sapb1.Addon.Consensus\B1Core\bin\Release\B1Core.pdb
+C:\Users\Administrator\Documents\Visual Studio 2015\Projects\Nar.Sapb1.Addon.Consensus\B1Core\bin\Release\SAPBusinessOneSDK.dll
+C:\Users\Administrator\Documents\Visual Studio 2015\Projects\Nar.Sapb1.Addon.Consensus\B1Core\obj\Release\B1Core.dll
+C:\Users\Administrator\Documents\Visual Studio 2015\Projects\Nar.Sapb1.Addon.Consensus\B1Core\obj\Release\B1Core.pdb
