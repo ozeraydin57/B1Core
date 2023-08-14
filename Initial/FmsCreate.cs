@@ -1,4 +1,5 @@
-﻿using B1Core.Business;
+using B1Core.Business;
+using SAPbobsCOM;
 using SAPbouiCOM.Framework;
 using System;
 using System.Collections.Generic;
@@ -10,130 +11,67 @@ namespace B1Core.Initial
 {
     public static class FmsCreate
     {
-        //User Query ve Formatted Searchleri oluşturan fonksiyondur.
-        public static void AddFms(string fmsName, string query, string formID, string itemID, string colID)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="categoryId"></param>
+        /// <param name="sql"></param>
+        /// <param name="queryName"></param>
+        /// <param name="fmsAdd"></param>
+        /// <param name="formId"></param>
+        /// <param name="itemId">fms konulacak item (matrix de olabilir)</param>
+        /// <param name="colId">alan ise -1 matrix ise kolon adı</param>
+        /// <param name="colIdRelation">otomatik trigger ettirecek alan</param>
+        public static void QueryAdd(int categoryId, string sql, string queryName, bool fmsAdd = false, string formId = "", string itemId = "", string colId = "", string colIdRelation = "")
         {
-            int errCode;
-            string errMsg;
+            UserQueries query = (UserQueries)Main.oCompany.GetBusinessObject(BoObjectTypes.oUserQueries);
+            query.Query = sql;
+            query.QueryCategory = categoryId;
+            query.QueryDescription = queryName;
+
+            var RetVal = query.Add();
+
+            if (fmsAdd)
+                FmsAdd(categoryId, queryName, formId, itemId, colId, colIdRelation);
+        }
+
+        public static void FmsAdd(int categoryId, string queryName, string formId, string ItemId, string colId, string colIdRelation)
+        {
+            SAPbobsCOM.Recordset oRecSet = Data.ExecuteSql("select \"IntrnalKey\" from \"OUQR\" where \"QName\" = '" + queryName + "'").Data;
+            int intrnalKey = Convert.ToInt32(oRecSet.Fields.Item(0).Value);
 
             SAPbobsCOM.FormattedSearches oFS = (SAPbobsCOM.FormattedSearches)Main.oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oFormattedSearches);
+            bool find = false;
 
-            SAPbobsCOM.UserQueries oUserQuery = (SAPbobsCOM.UserQueries)Main.oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserQueries);
-
-            //User Query var mı kontrolü yapar.
-            if (!QueryExist(fmsName))
+            var dt = Data.ExecuteSql($"select IndexID from CSHS where FormID='{formId}' and ItemID='{ItemId}' and ColID='{colId}' ");
+            if (dt.RecordCount > 0)
             {
-                Application.SBO_Application.StatusBar.SetText("Fms oluşturuluyor " + fmsName + " ..........Lütfen Bekleyiniz.", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Warning);
-
-                oUserQuery.QueryDescription = fmsName;
-
-                oUserQuery.Query = query;
-
-                oUserQuery.QueryType = SAPbobsCOM.UserQueryTypeEnum.uqtWizard;
-
-                oUserQuery.QueryCategory = -1;
-
-                errCode = oUserQuery.Add();
-
-                Main.oCompany.GetLastError(out errCode, out errMsg);
-
-                if (errCode != 0)
-                {
-                    Application.SBO_Application.StatusBar.SetText("Fms hata " + fmsName + " ", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Error);
-                }
-                else
-                {
-                    Application.SBO_Application.StatusBar.SetText("Fms oluşturuldu " + fmsName + " ", SAPbouiCOM.BoMessageTime.bmt_Short, SAPbouiCOM.BoStatusBarMessageType.smt_Success);
-                }
+                int index = int.Parse(dt.Data.Fields.Item("IndexID").Value.ToString());
+                find = oFS.GetByKey(index);
             }
 
-            if (!QueryExist(fmsName) || !formattedSearchExist(formID, itemID, colID))
+            oFS.FormID = formId;
+            oFS.ItemID = ItemId;
+            oFS.ColumnID = colId;
+            oFS.Action = SAPbobsCOM.BoFormattedSearchActionEnum.bofsaQuery;
+            oFS.QueryID = intrnalKey;
+            oFS.ByField = SAPbobsCOM.BoYesNoEnum.tYES;
+            if (colIdRelation != "")
             {
-
-                string sqlClause = "select \"IntrnalKey\" from \"OUQR\" where \"QName\" = '" + fmsName + "'";
-
-                SAPbobsCOM.Recordset oRecSet = Data.ExecuteSql(sqlClause).Data;
-
-                int intrnalKey = Convert.ToInt32(oRecSet.Fields.Item(0).Value);
-
-                oFS.FormID = formID;
-
-                oFS.ItemID = itemID;
-
-                oFS.ColumnID = colID;
-
-                oFS.Action = SAPbobsCOM.BoFormattedSearchActionEnum.bofsaQuery;
-
-                oFS.QueryID = intrnalKey;
-
-                oFS.ByField = SAPbobsCOM.BoYesNoEnum.tYES;
-
-
-                errCode = oFS.Add();
-
-                Main.oCompany.GetLastError(out errCode, out errMsg);
-
-
+                oFS.ByFieldEx = FormattedSearchByFieldEnum.fsbfWhenExitingAlteredColumn;
+                oFS.Refresh = BoYesNoEnum.tYES;
+                oFS.ForceRefresh = BoYesNoEnum.tYES;
+                oFS.FieldID = colIdRelation;
             }
 
-            oFS = null;
-            oUserQuery = null;
+            if (find)
+                oFS.Update();
+            else
+                oFS.Add();
 
-            TableCreate.GCClear();
+            var rrr = Main.oCompany.GetLastErrorDescription();
         }
 
-
-        //Verilen isimli user query var mı kontrol eder.
-        private static bool QueryExist(string queryName)
-        {
-            try
-            {
-                SAPbobsCOM.Recordset recordSet = Data.ExecuteSql("SELECT  COUNT(1) as \"COUNT\" from \"OUQR\" WHERE  \"QName\" = '" + queryName + "'").Data;
-
-                recordSet.MoveFirst();
-
-                if (Convert.ToInt32(recordSet.Fields.Item("COUNT").Value.ToString()) > 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception exc)
-            {
-                Logger.WriteErrorLog("Fms kurulum hata" + exc.ToString());
-                return true;
-            }
-        }
-
-
-        //Verilen isimli formatted search var mı kontrol eder.
-        private static bool formattedSearchExist(string formID, string itemID, string colID)
-        {
-            try
-            {
-                SAPbobsCOM.Recordset recordSet = Data.ExecuteSql("SELECT  COUNT(1) as \"COUNT\" from \"CSHS\" WHERE  \"FormID\" = '" + formID + "' and \"ItemID\" = '" + itemID + "' and \"ColID\" = '" + colID + "'").Data;
-
-                recordSet.MoveFirst();
-
-                if (Convert.ToInt32(recordSet.Fields.Item("COUNT").Value.ToString()) > 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception exc)
-            {
-                Logger.WriteErrorLog("Formatted search kontrolünde hata" + exc.ToString());
-                // hata durumunda drop etsin diye
-                return true;
-            }
-        }
+      
     }
 }
-
