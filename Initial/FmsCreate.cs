@@ -1,4 +1,4 @@
-using B1Core.Business;
+﻿using B1Core.Business;
 using SAPbobsCOM;
 using SAPbouiCOM.Framework;
 using System;
@@ -43,7 +43,7 @@ namespace B1Core.Initial
             SAPbobsCOM.FormattedSearches oFS = (SAPbobsCOM.FormattedSearches)Main.oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oFormattedSearches);
             bool find = false;
 
-            var dt = Data.ExecuteSql($"select IndexID from CSHS where FormID='{formId}' and ItemID='{ItemId}' and ColID='{colId}' ");
+            var dt = Data.ExecuteSql($"select \"IndexID\" from \"CSHS\" where \"FormID\"='{formId}' and \"ItemID\"='{ItemId}' and \"ColID\"='{colId}' ");
             if (dt.RecordCount > 0)
             {
                 int index = int.Parse(dt.Data.Fields.Item("IndexID").Value.ToString());
@@ -62,6 +62,12 @@ namespace B1Core.Initial
                 oFS.Refresh = BoYesNoEnum.tYES;
                 oFS.ForceRefresh = BoYesNoEnum.tYES;
                 oFS.FieldID = colIdRelation;
+
+                //if (colIdRelation2 != "")
+                //{
+                //    oFS.FieldIDs.Add();
+                //    oFS.FieldIDs.FieldID = colIdRelation2;
+                //}
             }
 
             if (find)
@@ -70,8 +76,35 @@ namespace B1Core.Initial
                 oFS.Add();
 
             var rrr = Main.oCompany.GetLastErrorDescription();
+
+            TableCreate.GCClear();
         }
 
-      
+        public static void FmsRemove(string categoryName)
+        {
+            Data.ExecuteSql($"delete from \"OQCN\" where \"CatName\" in ('{categoryName}')");
+            Data.ExecuteSql("delete from \"OUQR\" where \"QCategory\" in (select distinct \"QCategory\" from \"OUQR\" left join \"OQCN\" on \"QCategory\" = \"CategoryId\" where \"CategoryId\" is null)");
+            Data.ExecuteSql("delete from \"CSHS\" where \"QueryId\" not in (select \"IntrnalKey\" from \"OUQR\" )");
+        }
+
+
+        public static int GetCategoryId(string categoryName)
+        {
+            FmsRemove(categoryName);
+
+            QueryCategories categories = (QueryCategories)Main.oCompany.GetBusinessObject(BoObjectTypes.oQueryCategories);
+            categories.Name = categoryName;
+            categories.Permissions = "ALL_GROUPS_ALLOWED";
+            var RetVal = categories.Add();
+
+            int categoryId = int.Parse(Data.ExecuteSql($"SELECT * FROM \"OQCN\" WHERE \"CatName\"='{categoryName}'").Data.Fields.Item("CategoryId").Value.ToString());
+
+            return categoryId;
+        }
+
+        public static string GetTableFormId(string tableName)
+        {
+            return Data.ExecuteSql($"select '11'+right('00000'+CAST(\"TblNum\" as varchar(50)),3 ) \"FormId\" from \"OUTB\"  where \"TableName\"='{tableName}' ").Data.Fields.Item("FormId").Value.ToString();
+        }
     }
 }

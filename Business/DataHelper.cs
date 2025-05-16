@@ -17,7 +17,7 @@ namespace B1Core.Business
             }
             catch (Exception ex)
             {
-                Logger.WriteErrorLog("Hata N101: " + column + " " + ex.ToString());
+                Logger.WriteErrorLog("Hata : " + column + " " + ex.ToString());
                 return "";
             }
         }
@@ -32,7 +32,7 @@ namespace B1Core.Business
             }
             catch (Exception ex)
             {
-                Logger.WriteErrorLog("Hata N102: " + ex.ToString());
+                Logger.WriteErrorLog("Hata : " + ex.ToString());
                 return 0;
             }
         }
@@ -46,7 +46,7 @@ namespace B1Core.Business
             }
             catch (Exception ex)
             {
-                Logger.WriteErrorLog("Hata N104: " + ex.ToString());
+                Logger.WriteErrorLog("Hata : " + ex.ToString());
                 return new DateTime(1955, 1, 1);
             }
         }
@@ -63,7 +63,7 @@ namespace B1Core.Business
             }
             catch (Exception ex)
             {
-                Logger.WriteErrorLog("Hata N104: " + ex.ToString());
+                Logger.WriteErrorLog("Hata : " + ex.ToString());
                 return new DateTime(1955, 1, 1);
             }
         }
@@ -78,7 +78,7 @@ namespace B1Core.Business
             }
             catch (Exception ex)
             {
-                Logger.WriteErrorLog("Hata N105: " + ex.ToString());
+                Logger.WriteErrorLog("Hata : " + ex.ToString());
                 return 0;
             }
         }

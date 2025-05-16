@@ -27,9 +27,9 @@ namespace B1Core.Business.UI
                     catch { }
                 }
             }
-            catch (Exception ex)
+            catch //(Exception ex)
             {
-                StatusBar.SetMessage(BoStatusBarMessageType.smt_Error, "Seçim sırasında hata: " + ex.Message);
+               // StatusBar.SetMessage(BoStatusBarMessageType.smt_Error, "Seçim sırasında hata: " + ex.Message);
             }
         }
 
@@ -64,9 +64,9 @@ namespace B1Core.Business.UI
                     i++;
 
                     oCon = oCons.Add();
-                    oCon.Alias = item.Key;
+                    oCon.Alias = item.Key.Trim();
                     oCon.Operation = SAPbouiCOM.BoConditionOperation.co_EQUAL;
-                    oCon.CondVal = item.Value;
+                    oCon.CondVal = item.Value.Trim();
                 }
                 oCFL.SetConditions(oCons);
 

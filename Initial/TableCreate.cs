@@ -74,11 +74,6 @@ namespace B1Core.Initial
             }
         }
 
-        public static void CreateTable(object nAR_EDOCNUM, string v, BoUTBTableType bott_NoObjectAutoIncrement)
-        {
-            throw new NotImplementedException();
-        }
-
         private static bool ColumnExists(string TableName, string FieldID)
         {
             try
@@ -148,7 +143,7 @@ namespace B1Core.Initial
                     {
                         if (type == SAPbobsCOM.BoFieldTypes.db_Numeric)
                         {
-                            //v_UserField.EditSize = 11;
+                            v_UserField.EditSize = 11;
                         }
                         else
                         {
@@ -255,7 +250,7 @@ namespace B1Core.Initial
             }
             catch (Exception ex)
             {
-                Application.SBO_Application.StatusBar.SetText(" Hata Alınan Tablo : " + TableName + " Alan: " + FieldName + " Hata Kodu: " + ErrCode + " Hata Tanımı: " + ErrMsg + " ex:"+ex.Message, SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Error);
+                Application.SBO_Application.StatusBar.SetText(" Hata Alınan Tablo : " + TableName + " Alan: " + FieldName + " Hata Kodu: " + ErrCode + " Hata Tanımı: " + ErrMsg + " ex:" + ex.Message, SAPbouiCOM.BoMessageTime.bmt_Medium, SAPbouiCOM.BoStatusBarMessageType.smt_Error);
                 return false;
             }
         }
@@ -283,29 +278,39 @@ namespace B1Core.Initial
             GC.Collect();
             return v_ReturnCode;
         }
-        public static void AddUDO(string UDOCode, string UDOName, string TableName, SAPbobsCOM.BoUDOObjType UDOType)
+        public static void AddUDO(string TableName, SAPbobsCOM.BoUDOObjType UDOType, List<string> childTable = null)
         {
             try
             {
-                if (UDOExists(UDOCode))
+                if (UDOExists(TableName))
                     return;
                 SAPbobsCOM.UserObjectsMD oUserObjectMD = null;
                 oUserObjectMD = ((SAPbobsCOM.UserObjectsMD)(Main.oCompany.GetBusinessObject(SAPbobsCOM.BoObjectTypes.oUserObjectsMD)));
-
+              
                 oUserObjectMD.CanCancel = SAPbobsCOM.BoYesNoEnum.tYES;
                 oUserObjectMD.CanClose = SAPbobsCOM.BoYesNoEnum.tYES;
                 oUserObjectMD.CanCreateDefaultForm = SAPbobsCOM.BoYesNoEnum.tNO;
                 oUserObjectMD.CanDelete = SAPbobsCOM.BoYesNoEnum.tYES;
                 oUserObjectMD.CanFind = SAPbobsCOM.BoYesNoEnum.tYES;
+                oUserObjectMD.CanLog = SAPbobsCOM.BoYesNoEnum.tYES;
                 oUserObjectMD.CanYearTransfer = SAPbobsCOM.BoYesNoEnum.tYES;
-                oUserObjectMD.Code = UDOCode;
-                oUserObjectMD.Name = UDOName;
+                oUserObjectMD.Code = TableName;
+                oUserObjectMD.Name = TableName;
 
-
+                if (childTable != null)
+                {
+                    foreach (var item in childTable)
+                    {
+                        oUserObjectMD.ChildTables.Add();
+                        oUserObjectMD.ChildTables.ObjectName = item;
+                        oUserObjectMD.ChildTables.TableName = item;
+                    }
+                }
 
                 oUserObjectMD.ObjectType = UDOType;
                 oUserObjectMD.ManageSeries = SAPbobsCOM.BoYesNoEnum.tYES;
                 oUserObjectMD.TableName = TableName;
+
 
                 int RetVal = oUserObjectMD.Add();
                 string ErrMsg = "";

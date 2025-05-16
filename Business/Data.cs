@@ -72,6 +72,9 @@ namespace B1Core.Business
             return resp;
         }
 
+
+
+
         /// <summary>
         /// satır silmek için
         /// </summary>
@@ -168,7 +171,7 @@ namespace B1Core.Business
                 if (sqlType == SqlObjectType.Procedure)
                     sql = ExecSqlProcedure(sql);
 
-                sql = TimestampSqlQuery(sql);
+                sql = HanaSqlConvert(sql);
 
                 oRecSetLines.DoQuery(sql);
                 res.Data = oRecSetLines;
@@ -179,7 +182,7 @@ namespace B1Core.Business
             {
                 res.Success = false;
                 res.Message = ex.ToString();
-                StatusBar.SetMessage(SAPbouiCOM.BoStatusBarMessageType.smt_Error, "Hata N100: Data ExecuteSql " + sql + "\n" + ex.ToString());
+                StatusBar.SetMessage(SAPbouiCOM.BoStatusBarMessageType.smt_Error, "Hata : Data ExecuteSql " + sql + "\n" + ex.ToString());
             }
             return res;
         }
@@ -193,17 +196,22 @@ namespace B1Core.Business
             return sqlQuery;
         }
 
-        private static string TimestampSqlQuery(string sqlQuery)
+        public static string HanaSqlConvert(string sqlQuery)
         {
             if (Main.oCompany.DbServerType != SAPbobsCOM.BoDataServerTypes.dst_HANADB)
             {
                 sqlQuery = sqlQuery.Replace("timestamp", "");
             }
+
+            if (Main.oCompany.DbServerType == SAPbobsCOM.BoDataServerTypes.dst_HANADB)
+            {
+                sqlQuery = sqlQuery.Replace("isnull", "ifnull");
+            }
+
             return sqlQuery;
         }
 
-
-        public static Response<bool> ExecuteSqlCommand(string sql, SqlConnection conn)
+         public static Response<bool> ExecuteSqlCommand(string sql, SqlConnection conn)
         {
             var resp = new Response<bool>();
             try

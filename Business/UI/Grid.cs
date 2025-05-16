@@ -18,7 +18,7 @@ namespace B1Core.Business.UI
             }
             catch (Exception ex)
             {
-                Logger.WriteErrorLog("Hata N103: " + ex.ToString());
+                Logger.WriteErrorLog("Hata : " + ex.ToString());
             }
         }
 
@@ -30,7 +30,7 @@ namespace B1Core.Business.UI
             }
             catch (Exception ex)
             {
-                Logger.WriteErrorLog("Hata N106: " + ex.ToString());
+                Logger.WriteErrorLog("Hata : " + ex.ToString());
             }
         }
 
@@ -38,7 +38,7 @@ namespace B1Core.Business.UI
         {
             for (int i = 0; i < grid.Columns.Count; i++)
             {
-                grid.Columns.Item(i).Editable = false;
+                grid.Columns.Item(i).Editable = editable;
             }
         }
 
@@ -56,6 +56,12 @@ namespace B1Core.Business.UI
         public static void ColumnCaption(SAPbouiCOM.Grid grid, string column, string title)
         {
             grid.Columns.Item(column).TitleObject.Caption = title;
+        }
+
+        public static void SubTotal(SAPbouiCOM.Grid grid, string column)
+        {
+            EditTextColumn col = (EditTextColumn)grid.Columns.Item(column);
+            col.ColumnSetting.SumType = BoColumnSumType.bst_Auto;
         }
     }
 }
